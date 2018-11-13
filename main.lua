@@ -51,8 +51,7 @@ function love.update(dt)
 
 	checkCollisions(player, player.bullets)
 
-	t = dt
-	t = 1/t
+	t = t + dt
 	player.cooldown = player.cooldown - 1
 	if love.keyboard.isDown('d') then
 		if player.x < (love.graphics.getWidth() - player.img:getWidth()) then
@@ -103,7 +102,7 @@ end
  
 function love.draw()
 	-- Draw Statistics
-	love.graphics.print(p)
+	love.graphics.print(p/t)
 
 	-- Draw Terrain
 	love.graphics.setColor(255, 255, 255)
