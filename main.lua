@@ -1,4 +1,5 @@
 platform = {}
+terrain = {}
 player = {}
 
 function checkCollisions(player, bullets)
@@ -8,8 +9,22 @@ function checkCollisions(player, bullets)
 		end
 	end
 end
+
+function checkCollisionsBlocks(player, blocks)
+	for i, block in pairs(blocks) do
+		--print(block.x)
+	end
+end
  
 function love.load()
+	terrain.blocks = {}
+	block = {}
+	block.x = 200
+	block.y = 250
+	block.width = 60
+	block.height = 20
+	table.insert(terrain.blocks, block)
+
 	platform.width = love.graphics.getWidth()
 	platform.height = love.graphics.getHeight()
  
@@ -30,6 +45,11 @@ function love.load()
 	player.jump_height = -300
 	player.gravity = -800
 
+	player.hitbox = {}
+	player.hitbox.x = player.x+11
+	player.hitbox.y = player.y
+	player.hitbox.width = 10
+	player.hitbox.height = 10
 	player.bullets = {}
 	player.cooldown = 20
 	player.fire = function()
@@ -48,17 +68,20 @@ function love.load()
 end
  
 function love.update(dt)
+	player.hitbox.x = player.x+11
+	player.hitbox.y = player.y
 
 	checkCollisions(player, player.bullets)
+	checkCollisionsBlocks(player, terrain.blocks)
 
 	t = t + dt
 	player.cooldown = player.cooldown - 1
 	if love.keyboard.isDown('d') then
-		if player.x < (love.graphics.getWidth() - player.img:getWidth()) then
+		if player.hitbox.x < (terrain.blocks[1].x - player.hitbox.width) or (player.hitbox.x) > (terrain.blocks[1].x + terrain.blocks[1].width) or player.hitbox.y < terrain.blocks[1].y or player.hitbox.y > (terrain.blocks[1].y + terrain.blocks[1].height) then
 			player.x = player.x + (player.speed * dt)
 		end
 	elseif love.keyboard.isDown('a') then
-		if player.x > 0 then 
+		if player.hitbox.x < (terrain.blocks[1].x - player.hitbox.width) or (player.hitbox.x) > (terrain.blocks[1].x + terrain.blocks[1].width) or player.hitbox.y < terrain.blocks[1].y or player.hitbox.y > (terrain.blocks[1].y + terrain.blocks[1].height) then 
 			player.x = player.x - (player.speed * dt)
 		end
 	end
@@ -107,6 +130,7 @@ function love.draw()
 	-- Draw Terrain
 	love.graphics.setColor(255, 255, 255)
 	love.graphics.rectangle('fill', platform.x, platform.y, platform.width, platform.height)
+	love.graphics.rectangle('fill', terrain.blocks[1].x, terrain.blocks[1].y, terrain.blocks[1].width, terrain.blocks[1].height)
  
  	-- Draw Player
 	love.graphics.draw(player.img, player.x, player.y, 0, 1, 1, 0, 32)
